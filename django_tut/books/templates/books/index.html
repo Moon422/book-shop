@@ -36,70 +36,160 @@
 {% block content %}
 
 <div class="container">
-    <div class="row">
-        {% for book in books %}
-        <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
-            <div class="card" style="height: 100%;">
-                <div class="book-image">
-                    <div>
-                        <img src={{book.thumbnailurl}} class="card-img-top" alt="thumbnail" height="400">
-                    </div>
-                    <!-- <div class="card-img-overlay book-overlay-visibility bg-black opacity-75 p-4 pe-3 rounded-top-2">
-                        <p class="pe-3 text-white book-summary">
-                            {{ book.summary }}
-                        </p>
-                    </div> -->
-                </div>
-                <div class="card-body d-flex flex-column">
-                    <div class="flex-grow-1">
-                        <h5 class="card-title">
-                            <a href="/books/{{book.id}}">
-                                {{ book.title | truncatechars:"40" }}
-                            </a>
-                        </h5>
-                    </div>
-                    <p class="text-center">
-                        Price: ${{book.price}}
-                        {% if book.quantity > 0 %}
-                        (Instock)
-                        {% else %}
-                        (Out of Stock)
-                        {% endif %}
-                    </p>
-                    {% if user %}
-                    <form class="d-flex justify-content-between">
-                        <div class="d-flex justify-content-center">
-                            <button class="btn btn-danger quanity-decrease me-1" counter-id="book-quantity-{{book.id}}">
-                                <i class="fa-solid fa-minus"></i>
-                            </button>
-                            <input class="form-control border-2 me-1 text-center book-quantity-counter" type="number"
-                                name="book-quantity-{{book.id}}" id="book-quantity-{{book.id}}" style="width: 3rem;"
-                                value="0" min="0">
-                            <button class="btn btn-primary quanity-increase" counter-id="book-quantity-{{book.id}}">
-                                <i class="fa-solid fa-plus"></i>
-                            </button>
-                        </div>
+    <div class="border border-2 rounded-2">
+        <h2 class="p-4 border border-4 border-top-0 border-start-0 border-end-0 mb-4">Best Selling Books</h2>
+        <div class="row px-4">
+            {% for book in best_sellers|slice:"0:8" %}
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
+                <div class="card" style="height: 100%;">
+                    <div class="book-image">
                         <div>
-                            <button class="btn btn-success add-to-cart">
-                                <i class="fa-solid fa-cart-plus"></i>
-                            </button>
+                            <img src={{book.thumbnailurl}} class="card-img-top" alt="thumbnail" height="400">
                         </div>
-                    </form>
-                    {% else %}
-                    <h5 class="text-center">
-                        Sign in to buy
-                    </h5>
-                    {% endif %}
+                        <!-- <div class="card-img-overlay book-overlay-visibility bg-black opacity-75 p-4 pe-3 rounded-top-2">
+                                <p class="pe-3 text-white book-summary">
+                                    {{ book.summary }}
+                                </p>
+                            </div> -->
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title">
+                                <a href="/books/{{book.id}}">
+                                    {{ book.title | truncatechars:"40" }}
+                                </a>
+                            </h5>
+                        </div>
+                        <p class="text-center">
+                            Price: ${{book.price}}
+                            {% if book.quantity > 0 %}
+                            (Instock)
+                            {% else %}
+                            (Out of Stock)
+                            {% endif %}
+                        </p>
+                        {% if user %}
+                        <form class="d-flex justify-content-between">
+                            <div class="d-flex justify-content-center">
+                                <button class="btn btn-danger quanity-decrease me-1"
+                                    counter-id="book-quantity-{{book.id}}">
+                                    <i class="fa-solid fa-minus"></i>
+                                </button>
+                                <input class="form-control border-2 me-1 text-center book-quantity-counter"
+                                    type="number" name="book-quantity-{{book.id}}" id="book-quantity-{{book.id}}"
+                                    style="width: 3rem;" value="0" min="0">
+                                <button class="btn btn-primary quanity-increase" counter-id="book-quantity-{{book.id}}">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                            <div>
+                                <button class="btn btn-success add-to-cart">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </form>
+                        {% else %}
+                        <h5 class="text-center">
+                            Sign in to buy
+                        </h5>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
+            {% endfor %}
+            {% for book in best_sellers|slice:"8:" %}
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4 collapse top-selling-hidden">
+                <div class="card" style="height: 100%;">
+                    <div class="book-image">
+                        <div>
+                            <img src={{book.thumbnailurl}} class="card-img-top" alt="thumbnail" height="400">
+                        </div>
+                        <!-- <div class="card-img-overlay book-overlay-visibility bg-black opacity-75 p-4 pe-3 rounded-top-2">
+                                                                        <p class="pe-3 text-white book-summary">
+                                                                            {{ book.summary }}
+                                                                        </p>
+                                                                    </div> -->
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title">
+                                <a href="/books/{{book.id}}">
+                                    {{ book.title | truncatechars:"40" }}
+                                </a>
+                            </h5>
+                        </div>
+                        <p class="text-center">
+                            Price: ${{book.price}}
+                            {% if book.quantity > 0 %}
+                            (Instock)
+                            {% else %}
+                            (Out of Stock)
+                            {% endif %}
+                        </p>
+                        {% if user %}
+                        <form class="d-flex justify-content-between">
+                            <div class="d-flex justify-content-center">
+                                <button class="btn btn-danger quanity-decrease me-1"
+                                    counter-id="book-quantity-{{book.id}}">
+                                    <i class="fa-solid fa-minus"></i>
+                                </button>
+                                <input class="form-control border-2 me-1 text-center book-quantity-counter"
+                                    type="number" name="book-quantity-{{book.id}}" id="book-quantity-{{book.id}}"
+                                    style="width: 3rem;" value="0" min="0">
+                                <button class="btn btn-primary quanity-increase" counter-id="book-quantity-{{book.id}}">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                            <div>
+                                <button class="btn btn-success add-to-cart">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </form>
+                        {% else %}
+                        <h5 class="text-center">
+                            Sign in to buy
+                        </h5>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+        <button id="top-selling-toggle-btn" class="btn btn-primary w-100" type="button" data-bs-toggle="collapse"
+            data-bs-target=".top-selling-hidden" aria-expanded="false" aria-controls="collapseExample">
+            <!-- <i class="fa-solid fa-angles-up"></i> -->
+            <i id="top-selling-hidden-icon" class="fa-solid fa-angles-down"></i>
+            <span id="top-selling-hidden-text">Show More</span>
+        </button>
+        <input type="checkbox" id="top-selling-toggle-state" hidden>
     </div>
 </div>
 
 <script>
+    const topSellingToggleBtn = document.querySelector('#top-selling-toggle-btn');
+    const topSellingToggleState = document.querySelector('#top-selling-toggle-state');
     const decrementButtons = document.querySelectorAll('.quanity-decrease');
     const incrementButtons = document.querySelectorAll('.quanity-increase');
+
+    topSellingToggleState.checked = false;
+
+    topSellingToggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        topSellingToggleState.checked = !topSellingToggleState.checked;
+
+        const topSellingToggleBtnIcon = document.querySelector('#top-selling-hidden-icon');
+        const topSellingToggleBtnText = document.querySelector('#top-selling-hidden-text');
+
+        if (topSellingToggleState.checked) { // if checked then unhide the hidden books
+            topSellingToggleBtnIcon.classList.replace('fa-angles-down', 'fa-angles-up');
+            topSellingToggleBtnText.textContent = 'Show Less';
+        } else {
+            topSellingToggleBtnIcon.classList.replace('fa-angles-up', 'fa-angles-down');
+            topSellingToggleBtnText.textContent = 'Show More';
+        }
+    });
 
     for (const decrementButton of decrementButtons) {
         const quantityCounterId = decrementButton.getAttribute('counter-id');

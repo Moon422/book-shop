@@ -8,6 +8,12 @@
     display: none;
 }
 
+#surprise-btn:hover {
+    background: #1E3050;
+    border: 2px solid yellow;
+    color: yellow;
+}
+
 #search-box {
     margin-top: 10rem;
 }
