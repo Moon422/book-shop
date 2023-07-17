@@ -1,0 +1,75 @@
+from django.db import models
+
+# Create your models here.
+
+
+class Book(models.Model):
+    title = models.CharField(max_length=256, db_index=True)
+    authors = models.ManyToManyField("Author", through="BookAuthor")
+    isbn = models.CharField(max_length=13, db_index=True)
+    publishingdate = models.DateField()
+    genres = models.ManyToManyField("Genre", through="BookGenre")
+    thumbnailurl = models.CharField(max_length=1024, default="N/A")
+    summary = models.CharField(max_length=6144, default="N/A")
+    price = models.FloatField()
+    quantity = models.IntegerField()
+
+    createddate = models.DateField(auto_now_add=True)
+    updateddate = models.DateField(auto_now=True)
+
+
+class Author(models.Model):
+    firstname = models.CharField(max_length=128)
+    surname = models.CharField(max_length=256)
+    email = models.EmailField(max_length=128)
+    books = models.ManyToManyField(Book, through="BookAuthor")
+
+    createddate = models.DateField(auto_now_add=True)
+    updateddate = models.DateField(auto_now=True)
+
+    def fullname(self):
+        return f"{self.firstname} {self.surname}"
+
+
+class Customer(models.Model):
+    firstname = models.CharField(max_length=128)
+    surname = models.CharField(max_length=256)
+    email = models.EmailField(max_length=128)
+    phonenumber = models.CharField(max_length=14)
+
+    createddate = models.DateField(auto_now_add=True)
+    updateddate = models.DateField(auto_now=True)
+
+
+class BookAuthor(models.Model):
+    book = models.ForeignKey(Book, db_index=True, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, db_index=True, on_delete=models.CASCADE)
+
+    createddate = models.DateField(auto_now_add=True)
+    updateddate = models.DateField(auto_now=True)
+
+
+class Genre(models.Model):
+    name = models.CharField(max_length=128, db_index=True)
+    books = models.ManyToManyField(Book, through="BookGenre")
+
+
+class BookGenre(models.Model):
+    book = models.ForeignKey(Book, db_index=True, on_delete=models.CASCADE)
+    genre = models.ForeignKey(Genre, db_index=True, on_delete=models.CASCADE)
+
+
+class OrderItem(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    discount = models.FloatField(default=0)
+    order = models.ForeignKey("Order", on_delete=models.CASCADE)
+
+
+class Order(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    discount = models.FloatField(default=0)
+    orderplaced = models.BooleanField(default=False)
+
+    createddate = models.DateField(auto_now_add=True)
+    updateddate = models.DateField(auto_now=True)

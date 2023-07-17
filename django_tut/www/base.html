@@ -1,0 +1,167 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} | My Book Shop</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/fontawesome.css' %}">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/brands.css' %}">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/solid.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+    {% block style %}{% endblock %}
+</head>
+
+<body>
+    <!-- <header class="d-flex justify-content-between px-5 py-3 text-white bg-primary"> -->
+    <nav class="navbar bg-primary navbar-expand-lg px-5 py-3" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand fs-3 text-white" href="/books/">A!vedic Bookshop</a>
+            <button class="navbar-toggler p-3 py-2 border-white" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <i class="fa-solid fa-bars fs-3 text-bold text-white"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="d-lg-none py-4 text-start">
+                    <button class="search rounded-pill px-4 btn btn-light text-start w-100 mb-2">
+                        <i class="fa-solid fa-magnifying-glass me-2"></i> Search
+                    </button>
+                    {% if user %}
+                    <a href="#" class="rounded-pill px-4 btn btn-light text-start w-100 mb-2">
+                        <i class="fa-solid fa-cart-shopping me-2"></i> Shopping Cart
+                    </a>
+                    <div class="dropdown">
+                        <button class="rounded-pill px-4 btn btn-light text-start w-100" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-user me-2"></i> {{user.firstname}}
+                        </button>
+                        <ul class="dropdown-menu w-100 rounded-4 p-2">
+                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li><a class="dropdown-item" href="#">Sign Out</a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <button class="px-3 btn btn-warning border-4 border-dark rounded-4">
+                        Join
+                    </button>
+                    {% endif %}
+                </div>
+                <div class="ms-auto d-none d-lg-flex align-items-center">
+                    <button class="search rounded-pill px-4 btn btn-light me-2">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    {% if user %}
+                    <a href="#" class="btn btn-light rounded-pill px-4 me-2">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-light rounded-pill" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <i class="fa-solid fa-user"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li><a class="dropdown-item" href="#">Sign Out</a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <button class="px-3 btn btn-warning border-4 border-dark rounded-4">
+                        Join
+                    </button>
+                    {% endif %}
+                </div>
+                <!-- <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Dropdown
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled">Disabled</a>
+                    </li>
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form> -->
+            </div>
+        </div>
+    </nav>
+    <main id="content" class="my-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <div id="search-overlay">
+        <form action="/books/search" class="w-50 mx-auto d-flex rounded-3" id="search-box">
+            <div class="flex-grow-1 ps-3 bg-light rounded-start-2">
+                <input type="text" name="q" id="query-field" class="w-100 h-100 border-0 bg-light"
+                    placeholder="Search books">
+            </div>
+            <button class="btn btn-light rounded-start-0">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </form>
+    </div>
+
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script>
+        const searchButtons = document.querySelectorAll(".search");
+        const searchoverlay = document.querySelector("#search-overlay");
+        const searchbox = document.querySelector('#search-box');
+        const queryField = document.querySelector('#query-field');
+
+        searchbox.addEventListener('click', (e) => {
+            e.stopPropagation();
+        })
+
+        for (const searchbtn of searchButtons) {
+            searchbtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log("fuck");
+
+                searchoverlay.style.display = "block";
+            });
+        }
+
+        searchoverlay.addEventListener('click', (e) => {
+            e.preventDefault()
+            e.stopPropagation();
+
+            searchoverlay.style.display = "none";
+        });
+
+        queryField.addEventListener('focus', (e) => {
+            e.preventDefault();
+
+            searchbox.style.outline = "#3d70ff solid 5px";
+        });
+
+        queryField.addEventListener('focusout', (e) => {
+            e.preventDefault();
+
+            searchbox.style.outline = "0";
+        });
+    </script>
+</body>
+
+</html>

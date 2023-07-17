@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}{{book.title}}{% endblock %}
+
+{% block style %}
+<style>
+    #thumbnail-holder {
+        height: 50%;
+    }
+
+    @media all and (min-width: 768px) {
+        #thumbnail-holder {
+            height: 100%;
+        }
+    }
+
+    .book-quantity-counter::-webkit-outer-spin-button,
+    .book-quantity-counter::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .book-quantity-counter[type=number] {
+        -moz-appearance: textfield;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-4 col-lg-3" id="thumbnail-holder">
+            <img src="{{book.thumbnailurl}}" alt="Book thumbnail" width="100%">
+        </div>
+        <div class="col-12 col-md-8 col-lg-5 col-xl-6">
+            <h3>{{book.title}}</h3>
+            <p>
+                {{book.summary | linebreaks}}
+            </p>
+            <p>
+                Author(s):
+                {% for author in book.authors.all %}
+                <a href="/authors/{{author.id}}">{{author.fullname}}</a>{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            </p>
+            {% if user %}
+            <form class="d-flex justify-content-between">
+                <div class="d-flex justify-content-center">
+                    <button class="btn btn-danger quanity-decrease me-1" counter-id="book-quantity-{{book.id}}">
+                        <i class="fa-solid fa-minus"></i>
+                    </button>
+                    <input class="form-control border-2 me-1 text-center book-quantity-counter" type="number"
+                        name="book-quantity-{{book.id}}" id="book-quantity-{{book.id}}" style="width: 5rem;" value="0"
+                        min="0">
+                    <button class="btn btn-primary quanity-increase" counter-id="book-quantity-{{book.id}}">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+                <div>
+                    <button class="btn btn-success add-to-cart">
+                        <i class="fa-solid fa-cart-plus me-2"></i>
+                        Add to Cart
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <h5 class="text-center">
+                Sign in to buy
+            </h5>
+            {% endif %}
+        </div>
+        <div class="col-12 col-lg-4 col-xl-3">
+            <div style="height: 50rem; background: #000;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const decrementButtons = document.querySelectorAll('.quanity-decrease');
+    const incrementButtons = document.querySelectorAll('.quanity-increase');
+
+    for (const decrementButton of decrementButtons) {
+        const quantityCounterId = decrementButton.getAttribute('counter-id');
+        const counterElement = document.querySelector(`#${quantityCounterId}`);
+        decrementButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            const counterValue = parseInt(counterElement.value);
+            if (counterValue > 0) {
+                counterElement.value = counterValue - 1;
+            }
+        });
+    }
+
+    for (const incrementButton of incrementButtons) {
+        const quantityCounterId = incrementButton.getAttribute('counter-id');
+        const counterElement = document.querySelector(`#${quantityCounterId}`);
+        incrementButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            const counterValue = parseInt(counterElement.value);
+            counterElement.value = counterValue + 1;
+        });
+    }
+</script>
+{% endblock %}
