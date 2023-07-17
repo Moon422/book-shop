@@ -28,40 +28,42 @@
 
 {% block content %}
 <div class="container">
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-12 col-md-4 col-lg-3" id="thumbnail-holder">
             <img src="{{book.thumbnailurl}}" alt="Book thumbnail" width="100%">
         </div>
-        <div class="col-12 col-md-8 col-lg-5 col-xl-6">
+        <div class="col">
             <h3>{{book.title}}</h3>
             <p>
                 {{book.summary | linebreaks}}
             </p>
             <p>
-                Author(s):
-                {% for author in book.authors.all %}
-                <a href="/authors/{{author.id}}">{{author.fullname}}</a>{% if not forloop.last %},{% endif %}
-                {% endfor %}
+                Author(s): {{book.author}}
             </p>
             {% if user %}
-            <form class="d-flex justify-content-between">
-                <div class="d-flex justify-content-center">
-                    <button class="btn btn-danger quanity-decrease me-1" counter-id="book-quantity-{{book.id}}">
+            <form class="d-flex flex-column ms-auto w-25">
+                <div class="d-flex justify-content-center mb-2">
+                    <button class="btn btn-danger quanity-decrease me-2">
                         <i class="fa-solid fa-minus"></i>
                     </button>
-                    <input class="form-control border-2 me-1 text-center book-quantity-counter" type="number"
-                        name="book-quantity-{{book.id}}" id="book-quantity-{{book.id}}" style="width: 5rem;" value="0"
-                        min="0">
-                    <button class="btn btn-primary quanity-increase" counter-id="book-quantity-{{book.id}}">
+                    <input class="form-control border-2 text-center flex-grow-1 me-2 book-quantity-counter"
+                        type="number" name="book-quantity" id="book-quantity" style="width: 5rem;" value="0" min="0">
+                    <button class="btn btn-primary quanity-increase">
                         <i class="fa-solid fa-plus"></i>
                     </button>
                 </div>
-                <div>
-                    <button class="btn btn-success add-to-cart">
-                        <i class="fa-solid fa-cart-plus me-2"></i>
-                        Add to Cart
-                    </button>
+                <div class="input-group mb-2">
+                    <div class="input-group-text w-50">Base Price</div>
+                    <input class="form-control" id="base-price" type="text" price="{{book.price}}" readonly>
                 </div>
+                <div class="input-group mb-2">
+                    <div class="input-group-text w-50">Total Price</div>
+                    <input class="form-control" id="total-price" type="text" readonly>
+                </div>
+                <button class="btn btn-success add-to-cart w-100">
+                    <i class="fa-solid fa-cart-plus me-2"></i>
+                    Add to Cart
+                </button>
             </form>
             {% else %}
             <h5 class="text-center">
@@ -69,35 +71,120 @@
             </h5>
             {% endif %}
         </div>
-        <div class="col-12 col-lg-4 col-xl-3">
-            <div style="height: 50rem; background: #000;"></div>
+    </div>
+
+    <div class="border border-2 rounded-2">
+        <h3 class="p-2 mb-4 rounded-top-1 bg-primary text-white text-center">Suggested Books</h3>
+        <div class="row px-2">
+            {% for book in recommendation %}
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
+                <div class="card" style="height: 100%;">
+                    <div class="book-image">
+                        <div>
+                            <img src={{book.thumbnailurl}} class="card-img-top" alt="thumbnail" height="400">
+                        </div>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title">
+                                <a href="/books/{{book.id}}">
+                                    {{ book.title | truncatechars:"40" }}
+                                </a>
+                            </h5>
+                        </div>
+                        <p class="text-center">
+                            Price: ${{book.price}}
+                            {% if book.quantity > 0 %}
+                            (Instock)
+                            {% else %}
+                            (Out of Stock)
+                            {% endif %}
+                        </p>
+                        {% if user %}
+                        <form class="d-flex justify-content-between">
+                            <div class="d-flex justify-content-center">
+                                <button class="btn btn-danger recommended-quanity-decrease me-1"
+                                    recommended-counter-id="recommended-book-quantity-{{book.id}}">
+                                    <i class="fa-solid fa-minus"></i>
+                                </button>
+                                <input class="form-control border-2 me-1 text-center book-quantity-counter"
+                                    type="number" name="book-quantity-{{book.id}}"
+                                    id="recommended-book-quantity-{{book.id}}" style="width: 3rem;" value="0" min="0">
+                                <button class="btn btn-primary recommended-quanity-increase"
+                                    recommended-counter-id="recommended-book-quantity-{{book.id}}">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                            <div>
+                                <button class="btn btn-success add-to-cart">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </form>
+                        {% else %}
+                        <h5 class="text-center">
+                            Sign in to buy
+                        </h5>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
     </div>
 </div>
 
 <script>
-    const decrementButtons = document.querySelectorAll('.quanity-decrease');
-    const incrementButtons = document.querySelectorAll('.quanity-increase');
+    const counterElement = document.querySelector(`#book-quantity`);
+    const decrementButton = document.querySelector('.quanity-decrease');
+    const incrementButton = document.querySelector('.quanity-increase');
+    const basePriceDisplay = document.querySelector('#base-price');
+    const totalPriceDisplay = document.querySelector('#total-price');
+    const basePrice = parseFloat(basePriceDisplay.getAttribute('price'));
 
-    for (const decrementButton of decrementButtons) {
-        const quantityCounterId = decrementButton.getAttribute('counter-id');
-        const counterElement = document.querySelector(`#${quantityCounterId}`);
-        decrementButton.addEventListener('click', (e) => {
+    basePriceDisplay.value = `\$${basePrice}`;
+    totalPriceDisplay.value = `\$${parseInt(counterElement.value) * basePrice}`;
+
+    decrementButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        const counterValue = parseInt(counterElement.value);
+        if (counterValue > 0) {
+            const value = counterValue - 1;
+            counterElement.value = value;
+            totalPriceDisplay.value = `\$${value * basePrice}`;
+        }
+    });
+
+    incrementButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        const counterValue = parseInt(counterElement.value);
+        const value = counterValue + 1;
+        counterElement.value = value;
+        totalPriceDisplay.value = `\$${value * basePrice}`;
+    });
+
+    const recommendedDecrementButtons = document.querySelectorAll('.recommended-quanity-decrease');
+    const recommendedIncrementButtons = document.querySelectorAll('.recommended-quanity-increase');
+
+    for (const recommendedDecrementButton of recommendedDecrementButtons) {
+        const recommendedQuantityCounterId = recommendedDecrementButton.getAttribute('recommended-counter-id');
+        const recommendedCounterElement = document.querySelector(`#${recommendedQuantityCounterId}`);
+        recommendedDecrementButton.addEventListener('click', (e) => {
             e.preventDefault();
-            const counterValue = parseInt(counterElement.value);
+            const counterValue = parseInt(recommendedCounterElement.value);
             if (counterValue > 0) {
-                counterElement.value = counterValue - 1;
+                recommendedCounterElement.value = counterValue - 1;
             }
         });
     }
 
-    for (const incrementButton of incrementButtons) {
-        const quantityCounterId = incrementButton.getAttribute('counter-id');
-        const counterElement = document.querySelector(`#${quantityCounterId}`);
-        incrementButton.addEventListener('click', (e) => {
+    for (const recommendedIecrementButton of recommendedIncrementButtons) {
+        const recommendedQuantityCounterId = recommendedIecrementButton.getAttribute('recommended-counter-id');
+        const recommendedCounterElement = document.querySelector(`#${recommendedQuantityCounterId}`);
+        recommendedIecrementButton.addEventListener('click', (e) => {
             e.preventDefault();
-            const counterValue = parseInt(counterElement.value);
-            counterElement.value = counterValue + 1;
+            const counterValue = parseInt(recommendedCounterElement.value);
+            recommendedCounterElement.value = counterValue + 1;
         });
     }
 </script>
