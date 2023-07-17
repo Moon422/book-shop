@@ -53,7 +53,6 @@ def book_detail(request, id: int):
 
     similar_items_ids = [id for (id, _) in similar_items]
     similar_books = books.iloc[similar_items_ids]
-    print(similar_books)
 
     recommendation = [{
         'id': index,
