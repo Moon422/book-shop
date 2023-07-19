@@ -12,11 +12,11 @@ similarity_scores = pd.read_pickle('books/similarity_scores.pkl')
 
 # Create your views here.
 def index(request):
-    print('fuck')
 
     books_data = []
 
-    for index in books.head(50).index:
+    # for index in books.head(50).index:
+    for index in popular_df.head(50).index:
         books_data.append({
             'id': index,
             'title': books['Book-Title'][index],
@@ -51,7 +51,7 @@ def book_detail(request, id: int):
     }
 
     similar_items = sorted(
-        list(enumerate(similarity_scores[id])), key=lambda x: x[1], reverse=True)[1:6]
+        list(enumerate(similarity_scores[id])), key=lambda x: x[1], reverse=True)[1:9]
 
     similar_items_ids = [id for (id, _) in similar_items]
     similar_books = books.iloc[similar_items_ids]
