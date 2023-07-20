@@ -1,6 +1,8 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 
 # Create your models here.
+User = get_user_model()
 
 
 class Book(models.Model):
@@ -36,6 +38,7 @@ class Customer(models.Model):
     surname = models.CharField(max_length=256)
     email = models.EmailField(max_length=128)
     phonenumber = models.CharField(max_length=14)
+    user = models.ForeignKey(User, unique=True, db_index=True)
 
     createddate = models.DateField(auto_now_add=True)
     updateddate = models.DateField(auto_now=True)
