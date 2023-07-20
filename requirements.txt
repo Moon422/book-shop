@@ -3,3 +3,4 @@ djangorestframework
 pandas
 Faker
 mysqlclient
+python-dotenv
