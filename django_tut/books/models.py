@@ -38,7 +38,7 @@ class Customer(models.Model):
     surname = models.CharField(max_length=256)
     email = models.EmailField(max_length=128)
     phonenumber = models.CharField(max_length=14)
-    user = models.ForeignKey(User, unique=True, db_index=True)
+    user = models.OneToOneField(User, db_index=True, on_delete=models.CASCADE)
 
     createddate = models.DateField(auto_now_add=True)
     updateddate = models.DateField(auto_now=True)
