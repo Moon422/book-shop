@@ -9,7 +9,7 @@ class Book(models.Model):
     title = models.CharField(max_length=256, db_index=True)
     authors = models.ManyToManyField("Author", through="BookAuthor")
     isbn = models.CharField(max_length=13, db_index=True)
-    publishingdate = models.DateField()
+    yearpublished = models.CharField(max_length=4)
     genres = models.ManyToManyField("Genre", through="BookGenre")
     thumbnailurl = models.CharField(max_length=1024, default="N/A")
     summary = models.CharField(max_length=6144, default="N/A")
