@@ -1,0 +1,2 @@
+books with more than 70 ratings
+readers with more than 100 rated books
