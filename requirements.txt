@@ -4,3 +4,4 @@ pandas
 Faker
 python-dotenv
 mysqlclient
+scikit-learn
