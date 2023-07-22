@@ -3,7 +3,7 @@ from . import models
 
 
 def index(request):
-    books = list(models.Book.objects.all())
+    books = [popular_book.book for popular_book in models.PopularBooks.objects.all()]
     return render(request, 'books/index.html', context={
         'books': books,
         'user': {
