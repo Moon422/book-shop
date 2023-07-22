@@ -8,8 +8,9 @@ User = get_user_model()
 class Book(models.Model):
     title = models.CharField(max_length=256, db_index=True)
     authors = models.ManyToManyField("Author", through="BookAuthor")
-    isbn = models.CharField(max_length=13, db_index=True)
-    yearpublished = models.CharField(max_length=4)
+    isbn = models.CharField(max_length=13, db_index=True,
+                            null=True, default=None)
+    yearpublished = models.CharField(max_length=4, null=True, default=None)
     genres = models.ManyToManyField("Genre", through="BookGenre")
     thumbnailurl = models.CharField(max_length=1024, default="N/A")
     summary = models.CharField(max_length=6144, default="N/A")
@@ -29,6 +30,7 @@ class Author(models.Model):
     createddate = models.DateField(auto_now_add=True)
     updateddate = models.DateField(auto_now=True)
 
+    @property
     def fullname(self):
         return f"{self.firstname} {self.surname}"
 
@@ -60,6 +62,13 @@ class Genre(models.Model):
 class BookGenre(models.Model):
     book = models.ForeignKey(Book, db_index=True, on_delete=models.CASCADE)
     genre = models.ForeignKey(Genre, db_index=True, on_delete=models.CASCADE)
+
+
+class Rating(models.Model):
+    rating = models.IntegerField()
+    book = models.ForeignKey(Book, db_index=True, on_delete=models.CASCADE)
+    customer = models.ForeignKey(
+        Customer, db_index=True, on_delete=models.CASCADE)
 
 
 class OrderItem(models.Model):
