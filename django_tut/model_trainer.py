@@ -58,7 +58,7 @@ def collaborative_filtering():
     pivot_table.fillna(0, inplace=True)
 
     similarity_scores = cosine_similarity(pivot_table)
-    pickle.dump(similarity_scores, open('popular.pkl', 'wb'))
+    pickle.dump(similarity_scores, open('similarity_score.pkl', 'wb'))
 
 
 collaborative_filtering()
