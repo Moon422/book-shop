@@ -71,6 +71,10 @@ class Rating(models.Model):
         Customer, db_index=True, on_delete=models.CASCADE)
 
 
+class PopularBooks(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+
+
 class OrderItem(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     quantity = models.IntegerField()
