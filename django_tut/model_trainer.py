@@ -1,6 +1,8 @@
 import sqlite3
 import pandas as pd
+import pickle
 from books import models
+from sklearn.metrics.pairwise import cosine_similarity
 
 connection = sqlite3.connect("db.sqlite3")
 
@@ -45,7 +47,7 @@ def collaborative_filtering():
         readers_to_consider)]
 
     group_rating_by_book = book_rating_df.groupby('book_id').count()[
-        'rating'] >= 70
+        'rating'] >= 100
     books_to_consider = group_rating_by_book[group_rating_by_book].index
 
     final_ratings = filtered_ratings[filtered_ratings.book_id.isin(
@@ -54,7 +56,9 @@ def collaborative_filtering():
     pivot_table = final_ratings.pivot_table(
         index='book_id', columns='customer_id', values='rating')
     pivot_table.fillna(0, inplace=True)
-    print(pivot_table.shape)
+
+    similarity_scores = cosine_similarity(pivot_table)
+    pickle.dump(similarity_scores, open('popular.pkl', 'wb'))
 
 
 collaborative_filtering()
