@@ -14,16 +14,24 @@ similarity_scores = pd.read_pickle("similarity_score.pkl")
 
 def book_cart_view(request):
     customer = models.Customer.objects.get(user_id=request.user.id)
-    cart = models.Order.objects.get(customer_id=customer.id, orderplaced=False)
+    cart = models.Order.objects.filter(
+        customer_id=customer.id, orderplaced=False).first()
+
+    orders_delivered_id = [order.id for order in models.Order.objects.filter(
+        customer_id=customer.id, orderdelivered=True)]
+    print(orders_delivered_id)
+    order_items = models.OrderItem.objects.filter(
+        order_id__in=orders_delivered_id, review_submitted=False)
+    print(order_items)
 
     if not cart:
         return render(request, "books/cart_view.html", {
             "user": customer,
-            "cart": None
+            "cart_items": None,
+            "review_items": order_items
         })
 
     cart_items = models.OrderItem.objects.filter(order_id=cart.id)
-    print(cart_items)
 
     cart_items = [
         {
@@ -37,7 +45,8 @@ def book_cart_view(request):
 
     return render(request, "books/cart_view.html", {
         "user": customer,
-        "cart_items": cart_items
+        "cart_items": cart_items,
+        "review_items": order_items
     })
 
 
@@ -47,8 +56,8 @@ def book_add_to_cart(request: HttpRequest):
 
     customer = models.Customer.objects.get(user_id=request.user.id)
     book = models.Book.objects.get(id=book_id)
-    order = models.Order.objects.get(
-        customer_id=customer.id, orderplaced=False)
+    order = models.Order.objects.filter(
+        customer_id=customer.id, orderplaced=False).first()
     with transaction.atomic():
         if not order:
             order = models.Order.objects.create(
@@ -59,13 +68,55 @@ def book_add_to_cart(request: HttpRequest):
             quantity=book_quantity,
             order=order
         )
-    print(request.get_full_path())
+    redirect_url = request.META.get("HTTP_REFERER")
 
-    return HttpResponse()
+    return redirect(redirect_url)
 
 
-def book_order_item_remove(request):
-    pass
+def book_order_item_remove(request: HttpRequest):
+    order_item_id = int(request.POST.get("order-item-id"))
+
+    print(models.OrderItem.objects.get(id=order_item_id).delete())
+
+    return redirect(request.META.get("HTTP_REFERER"))
+
+
+def place_order(request: HttpRequest):
+    customer_id = models.Customer.objects.get(user_id=request.user.id).id
+    order = models.Order.objects.get(customer_id=customer_id,
+                                     orderplaced=False)
+    order.orderplaced = True
+    order.save()
+
+    return redirect("/books/")
+
+
+def cancel_order(request: HttpRequest):
+    customer_id = models.Customer.objects.get(user_id=request.user.id).id
+    models.Order.objects.get(customer_id=customer_id,
+                             orderplaced=False).delete()
+
+    return redirect("/books/")
+
+
+def order_item_review(request: HttpRequest):
+    customer = models.Customer.objects.get(user_id=request.user.id)
+    order_item_id = request.POST.get("order-item-id")
+    rating = int(request.POST.get("rating"))
+
+    order_item = models.OrderItem.objects.filter(id=order_item_id).first()
+    ordered_book = order_item.book
+
+    rating = models.Rating.objects.create(
+        rating=rating,
+        book=ordered_book,
+        customer=customer
+    )
+
+    order_item.review_submitted = True
+    order_item.save()
+
+    return redirect(request.META.get("HTTP_REFERER"))
 
 
 def user_login(request):

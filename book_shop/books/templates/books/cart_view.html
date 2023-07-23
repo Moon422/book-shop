@@ -27,7 +27,8 @@
 {% endblock %}
 
 {% block content %}
-<div class="container card p-4">
+{% if cart_items %}
+<div class="container border rounded p-4">
     {% for item in cart_items %}
     <div class="d-flex flex-row border rounded mb-2" style="height: 13rem; max-height: 13rem;">
         <div style="width: 8rem" class="p-2">
@@ -44,9 +45,9 @@
                 {% endfor %}
             </p>
         </div>
-        <form style="width: 16rem;" class="p-2 d-flex flex-column" method="post" action="/books/order-item-remove">
+        <form style="width: 16rem;" class="p-2 d-flex flex-column" method="post" action="/books/order_item_remove">
             {% csrf_token %}
-            <input type="text" name="order-id" value="{{item.id}}" hidden>
+            <input type="text" name="order-item-id" value="{{item.id}}" hidden>
             <div class="input-group mb-2">
                 <div class="input-group-text w-50">Qauntity</div>
                 <input class="form-control" type="text" value="{{item.quantity}}" readonly>
@@ -60,14 +61,69 @@
                 <input class="form-control" type="text" value="$ {{item.item_total}}" readonly>
             </div>
             <div class="flex-grow-1"></div>
-            <button class="btn btn-primary add-to-cart w-100">
+            <button class="btn btn-danger add-to-cart w-100">
                 <i class="fa-solid fa-trash-can me-2"></i>
                 Remove from Cart
             </button>
         </form>
     </div>
     {% endfor %}
+    <div class="d-flex justify-content-end">
+        <a href="/books/cancel_order" class="btn btn-danger px-3 py-2 me-2">
+            <i class="fa-solid fa-trash-can me-2"></i>
+            Cancel Order
+        </a>
+        <a href="/books/place_order" class="btn btn-success px-5 py-2">
+            <i class="fa-solid fa-cart-shopping me-2"></i>
+            Place Order
+        </a>
+    </div>
 </div>
+{% else %}
+<div class="container border rounded p-4">
+    {% if review_items %}
+    {% for item in review_items %}
+    <div class="d-flex flex-row border rounded mb-2" style="height: 13rem; max-height: 13rem;">
+        <div style="width: 8rem" class="p-2">
+            <img src="{{item.book.thumbnailurl}}" alt="thumbnail" width="100%" height="100%" class="rounded-1">
+        </div>
+        <div class="mx-2 flex-grow-1">
+            <h2>
+                {{item.book.title}}
+            </h2>
+            <p>
+                Author(s):
+                {% for author in item.book.authors.all %}
+                <a href="/authors/{{author.id}}">{{author.fullname}}</a>{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            </p>
+        </div>
+        <form style="width: 16rem;" class="p-2 d-flex flex-column" method="post" action="/books/order_item_review">
+            {% csrf_token %}
+            <input type="text" name="order-item-id" value="{{item.id}}" hidden>
+            <select class="form-select" aria-label="Default select example" name="rating">
+                <option selected>Open this select menu</option>
+                <option value="1">1 Star</option>
+                <option value="2">2 Star</option>
+                <option value="3">3 Star</option>
+                <option value="4">4 Star</option>
+                <option value="5">5 Star</option>
+            </select>
+            <div class="flex-grow-1">
+
+            </div>
+            <button class="btn btn-primary add-to-cart w-100">
+                Submit Review
+            </button>
+        </form>
+    </div>
+    {% endfor %}
+    {% else %}
+    <h3>Cart is empty</h3>
+    <a href="/books">Go to Home</a>
+    {% endif %}
+</div>
+{% endif %}
 
 <script>
 
