@@ -38,7 +38,10 @@
                 {{book.summary | linebreaks}}
             </p>
             <p>
-                Author(s): {{book.author}}
+                Author(s):
+                {% for author in book.authors.all %}
+                <a href="/authors/{{author.id}}">{{author.fullname}}</a>{% if not forloop.last %},{% endif %}
+                {% endfor %}
             </p>
             {% if user %}
             <form class="d-flex flex-column ms-auto w-25">

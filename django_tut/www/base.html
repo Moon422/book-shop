@@ -28,6 +28,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <div class="d-lg-none py-4 text-start">
+                    <button class="rounded-pill px-4 btn btn-light text-start w-100 mb-2">
+                        <i class="fa-regular fa-lightbulb me-2"></i> Get Surprised!
+                    </button>
                     <button class="search rounded-pill px-4 btn btn-light text-start w-100 mb-2">
                         <i class="fa-solid fa-magnifying-glass me-2"></i> Search
                     </button>
@@ -52,11 +55,15 @@
                     {% endif %}
                 </div>
                 <div class="ms-auto d-none d-lg-flex align-items-center">
-                    <button class="search rounded-pill px-4 btn btn-light me-2">
+                    <button class="search rounded-pill px-4 btn btn-light me-2" style="width: 4.5rem;">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
+                    <a href="/books/surprise" class="btn btn-light rounded-pill px-4 me-2" id="surprise-btn"
+                        title="Get Surprised!" style="width: 4.5rem;">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </a>
                     {% if user %}
-                    <a href="#" class="btn btn-light rounded-pill px-4 me-2">
+                    <a href="#" class="btn btn-light rounded-pill px-4 me-2" style="width: 4.5rem;">
                         <i class="fa-solid fa-cart-shopping"></i>
                     </a>
                     <div class="dropdown">

@@ -1,7 +1,10 @@
 import sqlite3
+import numpy as np
 import pandas as pd
-import pickle
+import pickle as pkl
 from books import models
+from scipy.sparse import csr_matrix
+from sklearn.neighbors import NearestNeighbors
 from sklearn.metrics.pairwise import cosine_similarity
 
 connection = sqlite3.connect("db.sqlite3")
@@ -39,18 +42,18 @@ def popular_books(push_to_db=False):
 
 
 def collaborative_filtering():
-    group_rating_by_reader = book_rating_df.groupby(
-        'customer_id').count()['rating'] >= 125
+    group_rating_by_reader = (book_rating_df.groupby('customer_id').count()
+                              ['rating'] >= 125)
     readers_to_consider = group_rating_by_reader[group_rating_by_reader].index
 
-    filtered_ratings = book_rating_df[book_rating_df.customer_id.isin(
+    filtered_rating = book_rating_df[book_rating_df.customer_id.isin(
         readers_to_consider)]
 
-    group_rating_by_book = book_rating_df.groupby('book_id').count()[
-        'rating'] >= 100
+    group_rating_by_book = filtered_rating.groupby('book_id').count()[
+        'rating'] >= 25
     books_to_consider = group_rating_by_book[group_rating_by_book].index
 
-    final_ratings = filtered_ratings[filtered_ratings.book_id.isin(
+    final_ratings = filtered_rating[filtered_rating.book_id.isin(
         books_to_consider)]
 
     pivot_table = final_ratings.pivot_table(
@@ -58,8 +61,9 @@ def collaborative_filtering():
     pivot_table.fillna(0, inplace=True)
 
     similarity_scores = cosine_similarity(pivot_table)
-    pickle.dump(pivot_table, open('pivot_table.pkl', 'wb'))
-    pickle.dump(similarity_scores, open('similarity_score.pkl', 'wb'))
+
+    pkl.dump(pivot_table, open('pivot_table.pkl', 'wb'))
+    pkl.dump(similarity_scores, open('similarity_score.pkl', 'wb'))
 
 
 collaborative_filtering()
