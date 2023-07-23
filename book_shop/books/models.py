@@ -45,6 +45,10 @@ class Customer(models.Model):
     createddate = models.DateField(auto_now_add=True)
     updateddate = models.DateField(auto_now=True)
 
+    @property
+    def fullname(self):
+        return f"{self.firstname} {self.surname}"
+
 
 class BookAuthor(models.Model):
     book = models.ForeignKey(Book, db_index=True, on_delete=models.CASCADE)
@@ -79,6 +83,7 @@ class OrderItem(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     discount = models.FloatField(default=0)
+    review_submitted = models.BooleanField(default=False)
     order = models.ForeignKey("Order", on_delete=models.CASCADE)
 
 
@@ -86,6 +91,7 @@ class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     discount = models.FloatField(default=0)
     orderplaced = models.BooleanField(default=False)
+    orderdelivered = models.BooleanField(default=False)
 
     createddate = models.DateField(auto_now_add=True)
     updateddate = models.DateField(auto_now=True)

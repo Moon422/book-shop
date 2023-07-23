@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Cart View{% endblock %}
+
+{% block style %}
+<style>
+    #thumbnail-holder {
+        height: 50%;
+    }
+
+    @media all and (min-width: 768px) {
+        #thumbnail-holder {
+            height: 100%;
+        }
+    }
+
+    .book-quantity-counter::-webkit-outer-spin-button,
+    .book-quantity-counter::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .book-quantity-counter[type=number] {
+        -moz-appearance: textfield;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container card p-4">
+    {% for item in cart_items %}
+    <div class="d-flex flex-row border rounded mb-2" style="height: 13rem; max-height: 13rem;">
+        <div style="width: 8rem" class="p-2">
+            <img src="{{item.book.thumbnailurl}}" alt="thumbnail" width="100%" height="100%" class="rounded-1">
+        </div>
+        <div class="mx-2 flex-grow-1">
+            <h2>
+                {{item.book.title}}
+            </h2>
+            <p>
+                Author(s):
+                {% for author in item.book.authors.all %}
+                <a href="/authors/{{author.id}}">{{author.fullname}}</a>{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            </p>
+        </div>
+        <form style="width: 16rem;" class="p-2 d-flex flex-column" method="post" action="/books/order-item-remove">
+            {% csrf_token %}
+            <input type="text" name="order-id" value="{{item.id}}" hidden>
+            <div class="input-group mb-2">
+                <div class="input-group-text w-50">Qauntity</div>
+                <input class="form-control" type="text" value="{{item.quantity}}" readonly>
+            </div>
+            <div class="input-group mb-2">
+                <div class="input-group-text w-50">Base Price</div>
+                <input class="form-control" type="text" value="$ {{item.book.price}}" readonly>
+            </div>
+            <div class="input-group mb-2">
+                <div class="input-group-text w-50">Total Price</div>
+                <input class="form-control" type="text" value="$ {{item.item_total}}" readonly>
+            </div>
+            <div class="flex-grow-1"></div>
+            <button class="btn btn-primary add-to-cart w-100">
+                <i class="fa-solid fa-trash-can me-2"></i>
+                Remove from Cart
+            </button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+
+</script>
+{% endblock %}

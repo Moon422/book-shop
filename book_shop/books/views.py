@@ -1,7 +1,10 @@
 import random
 import numpy as np
 import pandas as pd
-from django.shortcuts import render
+from django.shortcuts import render, redirect, HttpResponse
+from django.http import HttpRequest
+from django.contrib.auth import login, authenticate, logout
+from django.db import transaction
 from . import models
 
 
@@ -9,14 +12,90 @@ pivot_table = pd.read_pickle("pivot_table.pkl")
 similarity_scores = pd.read_pickle("similarity_score.pkl")
 
 
+def book_cart_view(request):
+    customer = models.Customer.objects.get(user_id=request.user.id)
+    cart = models.Order.objects.get(customer_id=customer.id, orderplaced=False)
+
+    if not cart:
+        return render(request, "books/cart_view.html", {
+            "user": customer,
+            "cart": None
+        })
+
+    cart_items = models.OrderItem.objects.filter(order_id=cart.id)
+    print(cart_items)
+
+    cart_items = [
+        {
+            "id": item.id,
+            "book": item.book,
+            "quantity": item.quantity,
+            "item_total": item.quantity * item.book.price
+        }
+        for item in cart_items
+    ]
+
+    return render(request, "books/cart_view.html", {
+        "user": customer,
+        "cart_items": cart_items
+    })
+
+
+def book_add_to_cart(request: HttpRequest):
+    book_id = int(request.POST.get("book-id"))
+    book_quantity = int(request.POST.get("book-quantity"))
+
+    customer = models.Customer.objects.get(user_id=request.user.id)
+    book = models.Book.objects.get(id=book_id)
+    order = models.Order.objects.get(
+        customer_id=customer.id, orderplaced=False)
+    with transaction.atomic():
+        if not order:
+            order = models.Order.objects.create(
+                customer=customer
+            )
+        order_item = models.OrderItem.objects.create(
+            book=book,
+            quantity=book_quantity,
+            order=order
+        )
+    print(request.get_full_path())
+
+    return HttpResponse()
+
+
+def book_order_item_remove(request):
+    pass
+
+
+def user_login(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(username=username, password=password)
+
+        if user:
+            login(request, user)
+            return redirect("book_index")
+        else:
+            redirect("book_user_login")
+    return render(request, "books/login.html")
+
+
+def user_logout(request):
+    logout(request)
+    return redirect("book_index")
+
+
 def index(request):
     books = get_popular_books()
+    customer = None
+    if request.user.id:
+        customer = models.Customer.objects.get(user_id=request.user.id)
+        print(customer)
     return render(request, 'books/index.html', context={
         'best_sellers': books,
-        'user': {
-            'firstname': "Mahfuzur Rahman"
-        }
-        # 'user': None,
+        'user': customer
     })
 
 

@@ -35,7 +35,7 @@
                         <i class="fa-solid fa-magnifying-glass me-2"></i> Search
                     </button>
                     {% if user %}
-                    <a href="#" class="rounded-pill px-4 btn btn-light text-start w-100 mb-2">
+                    <a href="/books/cart" class="rounded-pill px-4 btn btn-light text-start w-100 mb-2">
                         <i class="fa-solid fa-cart-shopping me-2"></i> Shopping Cart
                     </a>
                     <div class="dropdown">
@@ -45,7 +45,7 @@
                         </button>
                         <ul class="dropdown-menu w-100 rounded-4 p-2">
                             <li><a class="dropdown-item" href="#">Profile</a></li>
-                            <li><a class="dropdown-item" href="#">Sign Out</a></li>
+                            <li><a class="dropdown-item" href="/books/signout">Sign Out</a></li>
                         </ul>
                     </div>
                     {% else %}
@@ -63,7 +63,7 @@
                         <i class="fa-solid fa-lightbulb"></i>
                     </a>
                     {% if user %}
-                    <a href="#" class="btn btn-light rounded-pill px-4 me-2" style="width: 4.5rem;">
+                    <a href="/books/cart" class="btn btn-light rounded-pill px-4 me-2" style="width: 4.5rem;">
                         <i class="fa-solid fa-cart-shopping"></i>
                     </a>
                     <div class="dropdown">
@@ -73,13 +73,13 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#">Profile</a></li>
-                            <li><a class="dropdown-item" href="#">Sign Out</a></li>
+                            <li><a class="dropdown-item" href="/books/signout">Sign Out</a></li>
                         </ul>
                     </div>
                     {% else %}
-                    <button class="px-3 btn btn-warning border-4 border-dark rounded-4">
+                    <a href="/books/login" class="px-3 btn btn-warning border-4 border-dark rounded-4">
                         Join
-                    </button>
+                    </a>
                     {% endif %}
                 </div>
                 <!-- <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
