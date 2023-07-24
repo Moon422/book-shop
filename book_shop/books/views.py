@@ -12,6 +12,28 @@ pivot_table = pd.read_pickle("pivot_table.pkl")
 similarity_scores = pd.read_pickle("similarity_score.pkl")
 
 
+def user_login(request: HttpRequest):
+    if request.method == "POST":
+        if request.user.is_authenticated:
+            logout(request)
+
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(username=username, password=password)
+
+        if user:
+            login(request, user)
+            return redirect("book_index")
+        else:
+            redirect("book_user_login")
+    return render(request, "books/login.html")
+
+
+def user_logout(request):
+    logout(request)
+    return redirect("book_index")
+
+
 def book_cart_view(request):
     customer = models.Customer.objects.get(user_id=request.user.id)
     cart = models.Order.objects.filter(
@@ -117,25 +139,6 @@ def order_item_review(request: HttpRequest):
     order_item.save()
 
     return redirect(request.META.get("HTTP_REFERER"))
-
-
-def user_login(request):
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-        user = authenticate(username=username, password=password)
-
-        if user:
-            login(request, user)
-            return redirect("book_index")
-        else:
-            redirect("book_user_login")
-    return render(request, "books/login.html")
-
-
-def user_logout(request):
-    logout(request)
-    return redirect("book_index")
 
 
 def index(request):
