@@ -88,10 +88,15 @@ class OrderItem(models.Model):
 
 
 class Order(models.Model):
+    class OrderStatus(models.IntegerChoices):
+        NOT_PLACED = 0
+        ORDER_PLACED = 1
+        DELIVERED = 2
+
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     discount = models.FloatField(default=0)
-    orderplaced = models.BooleanField(default=False)
-    orderdelivered = models.BooleanField(default=False)
+    orderstatus = models.IntegerField(
+        choices=OrderStatus.choices, default=OrderStatus.NOT_PLACED)
 
     createddate = models.DateField(auto_now_add=True)
     updateddate = models.DateField(auto_now=True)
