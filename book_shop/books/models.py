@@ -98,5 +98,9 @@ class Order(models.Model):
     orderstatus = models.IntegerField(
         choices=OrderStatus.choices, default=OrderStatus.NOT_PLACED)
 
+    # to be deleted
+    orderplaced = models.BooleanField(default=False)
+    orderdelivered = models.BooleanField(default=False)
+
     createddate = models.DateField(auto_now_add=True)
     updateddate = models.DateField(auto_now=True)
