@@ -93,42 +93,42 @@ def book_suprise(request: HttpRequest):
     return HttpResponse("Unauthorized", status=401)
 
 
-def book_cart_view(request):
-    customer = models.Customer.objects.get(user_id=request.user.id)
-    cart = models.Order.objects.filter(
-        customer_id=customer.id, orderplaced=False).first()
+def book_cart_view(request: HttpRequest):
+    if request.user.is_authenticated:
+        customer = models.Customer.objects.get(user_id=request.user.id)
+        cart = models.Order.objects.filter(
+            customer_id=customer.id, orderstatus=models.Order.OrderStatus.NOT_PLACED).first()
 
-    orders_delivered_id = [order.id for order in models.Order.objects.filter(
-        customer_id=customer.id, orderdelivered=True)]
-    print(orders_delivered_id)
-    order_items = models.OrderItem.objects.filter(
-        order_id__in=orders_delivered_id, review_submitted=False)
-    print(order_items)
+        orders_delivered_id = [order.id for order in models.Order.objects.filter(
+            customer_id=customer.id, orderstatus=models.Order.OrderStatus.DELIVERED)]
+        order_items = models.OrderItem.objects.filter(
+            order_id__in=orders_delivered_id, review_submitted=False)
 
-    if not cart:
+        if not cart:
+            return render(request, "books/cart_view.html", {
+                "user": customer,
+                "cart_items": None,
+                "review_items": order_items
+            })
+
+        cart_items = models.OrderItem.objects.filter(order_id=cart.id)
+
+        cart_items = [
+            {
+                "id": item.id,
+                "book": item.book,
+                "quantity": item.quantity,
+                "item_total": item.quantity * item.book.price
+            }
+            for item in cart_items
+        ]
+
         return render(request, "books/cart_view.html", {
             "user": customer,
-            "cart_items": None,
+            "cart_items": cart_items,
             "review_items": order_items
         })
-
-    cart_items = models.OrderItem.objects.filter(order_id=cart.id)
-
-    cart_items = [
-        {
-            "id": item.id,
-            "book": item.book,
-            "quantity": item.quantity,
-            "item_total": item.quantity * item.book.price
-        }
-        for item in cart_items
-    ]
-
-    return render(request, "books/cart_view.html", {
-        "user": customer,
-        "cart_items": cart_items,
-        "review_items": order_items
-    })
+    return HttpResponse("Unauthorized", status=401)
 
 
 def book_add_to_cart(request: HttpRequest):
