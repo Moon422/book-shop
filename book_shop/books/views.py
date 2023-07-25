@@ -34,6 +34,48 @@ def user_logout(request):
     return redirect("book_index")
 
 
+def index(request: HttpRequest):
+    books = get_popular_books()
+    if request.user.is_authenticated:
+        customer = models.Customer.objects.get(user_id=request.user.id)
+
+        return render(request, 'books/index.html', context={
+            'best_sellers': books,
+            'user': {
+                'firstname': customer.firstname,
+                'lastname': customer.surname
+            }
+        })
+
+    return render(request, 'books/index.html', context={
+        'best_sellers': books,
+        'user': None
+    })
+
+
+def book_detail(request: HttpRequest, id: int):
+    book = models.Book.objects.get(id=id)
+    similar_books = recommend_book(book.id)
+
+    if request.user.is_authenticated:
+        customer = models.Customer.objects.get(user_id=request.user.id)
+
+        return render(request, 'books/index.html', context={
+            'book': book,
+            'recommendation': similar_books,
+            'user': {
+                'firstname': customer.firstname,
+                'lastname': customer.surname
+            }
+        })
+
+    return render(request, 'books/book_detail.html', context={
+        'book': book,
+        'recommendation': similar_books,
+        'user': None
+    })
+
+
 def book_cart_view(request):
     customer = models.Customer.objects.get(user_id=request.user.id)
     cart = models.Order.objects.filter(
@@ -139,31 +181,6 @@ def order_item_review(request: HttpRequest):
     order_item.save()
 
     return redirect(request.META.get("HTTP_REFERER"))
-
-
-def index(request):
-    books = get_popular_books()
-    customer = None
-    if request.user.id:
-        customer = models.Customer.objects.get(user_id=request.user.id)
-        print(customer)
-    return render(request, 'books/index.html', context={
-        'best_sellers': books,
-        'user': customer
-    })
-
-
-def book_detail(request, id: int):
-    book = models.Book.objects.get(id=id)
-    similar_books = recommend_book(book.id)
-
-    return render(request, 'books/book_detail.html', context={
-        'book': book,
-        'recommendation': similar_books,
-        'user': {
-            'firstname': 'Mahfuzur Rahman'
-        }
-    })
 
 
 def book_suprise(request):
