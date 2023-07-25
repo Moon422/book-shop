@@ -157,11 +157,13 @@ def book_add_to_cart(request: HttpRequest):
 
 
 def book_order_item_remove(request: HttpRequest):
-    order_item_id = int(request.POST.get("order-item-id"))
-
-    print(models.OrderItem.objects.get(id=order_item_id).delete())
-
-    return redirect(request.META.get("HTTP_REFERER"))
+    if request.user.is_authenticated and request.method == "POST":
+        order_item_id = int(request.POST.get("order-item-id"))
+        order_item = models.OrderItem.objects.filter(id=order_item_id).first()
+        if order_item and order_item.order.orderstatus == models.Order.OrderStatus.NOT_PLACED:
+            order_item.delete()
+        return redirect(request.META.get("HTTP_REFERER"))
+    return HttpResponse("Unauthorized", status=401)
 
 
 def place_order(request: HttpRequest):
