@@ -132,26 +132,28 @@ def book_cart_view(request: HttpRequest):
 
 
 def book_add_to_cart(request: HttpRequest):
-    book_id = int(request.POST.get("book-id"))
-    book_quantity = int(request.POST.get("book-quantity"))
+    if request.user.is_authenticated and request.method == "POST":
+        book_id = int(request.POST.get("book-id"))
+        book_quantity = int(request.POST.get("book-quantity"))
 
-    customer = models.Customer.objects.get(user_id=request.user.id)
-    book = models.Book.objects.get(id=book_id)
-    order = models.Order.objects.filter(
-        customer_id=customer.id, orderplaced=False).first()
-    with transaction.atomic():
-        if not order:
-            order = models.Order.objects.create(
-                customer=customer
+        customer = models.Customer.objects.get(user_id=request.user.id)
+        book = models.Book.objects.get(id=book_id)
+        order = models.Order.objects.filter(
+            customer_id=customer.id, orderstatus=models.Order.OrderStatus.NOT_PLACED).first()
+        with transaction.atomic():
+            if not order:
+                order = models.Order.objects.create(
+                    customer=customer
+                )
+            models.OrderItem.objects.create(
+                book=book,
+                quantity=book_quantity,
+                order=order
             )
-        order_item = models.OrderItem.objects.create(
-            book=book,
-            quantity=book_quantity,
-            order=order
-        )
-    redirect_url = request.META.get("HTTP_REFERER")
+        redirect_url = request.META.get("HTTP_REFERER")
 
-    return redirect(redirect_url)
+        return redirect(redirect_url)
+    return HttpResponse("Unauthorized", status=401)
 
 
 def book_order_item_remove(request: HttpRequest):
