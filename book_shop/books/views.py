@@ -188,23 +188,26 @@ def cancel_order(request: HttpRequest):
 
 
 def order_item_review(request: HttpRequest):
-    customer = models.Customer.objects.get(user_id=request.user.id)
-    order_item_id = request.POST.get("order-item-id")
-    rating = int(request.POST.get("rating"))
+    if request.user.is_authenticated and request.method == "POST":
+        customer = models.Customer.objects.get(user_id=request.user.id)
+        order_item_id = int(request.POST.get("order-item-id"))
+        rating = int(request.POST.get("rating"))
 
-    order_item = models.OrderItem.objects.filter(id=order_item_id).first()
-    ordered_book = order_item.book
+        order_item = models.OrderItem.objects.filter(id=order_item_id).first()
+        ordered_book = order_item.book
 
-    rating = models.Rating.objects.create(
-        rating=rating,
-        book=ordered_book,
-        customer=customer
-    )
+        with transaction.atomic():
+            models.Rating.objects.create(
+                rating=rating,
+                book=ordered_book,
+                customer=customer
+            )
 
-    order_item.review_submitted = True
-    order_item.save()
+            order_item.review_submitted = True
+            order_item.save()
 
-    return redirect(request.META.get("HTTP_REFERER"))
+        return redirect(request.META.get("HTTP_REFERER"))
+    return HttpResponse("Unauthorized", status=401)
 
 
 def recommend_book(book_id: int, count: int = 5):
