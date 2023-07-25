@@ -167,13 +167,15 @@ def book_order_item_remove(request: HttpRequest):
 
 
 def place_order(request: HttpRequest):
-    customer_id = models.Customer.objects.get(user_id=request.user.id).id
-    order = models.Order.objects.get(customer_id=customer_id,
-                                     orderplaced=False)
-    order.orderplaced = True
-    order.save()
+    if request.user.is_authenticated:
+        customer_id = models.Customer.objects.get(user_id=request.user.id).id
+        order = models.Order.objects.get(customer_id=customer_id,
+                                         orderstatus=models.Order.OrderStatus.NOT_PLACED)
+        order.orderstatus = models.Order.OrderStatus.ORDER_PLACED
+        order.save()
 
-    return redirect("/books/")
+        return redirect("/books/")
+    return HttpResponse("Unauthorized", status=401)
 
 
 def cancel_order(request: HttpRequest):
