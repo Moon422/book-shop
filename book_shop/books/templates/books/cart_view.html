@@ -29,6 +29,7 @@
 {% block content %}
 {% if cart_items %}
 <div class="container border rounded p-4">
+    <h2>Cart Items</h2>
     {% for item in cart_items %}
     <div class="d-flex flex-row border rounded mb-2" style="height: 13rem; max-height: 13rem;">
         <div style="width: 8rem" class="p-2">
@@ -81,7 +82,13 @@
 </div>
 {% else %}
 <div class="container border rounded p-4">
-    {% if review_items %}
+    <h3>Cart is empty</h3>
+    <a href="/books">Go to Home</a>
+</div>
+{% endif %}
+{% if review_items %}
+<div class="container border rounded p-4 mt-4">
+    <h2>Review Previously Bought Items</h2>
     {% for item in review_items %}
     <div class="d-flex flex-row border rounded mb-2" style="height: 13rem; max-height: 13rem;">
         <div style="width: 8rem" class="p-2">
@@ -118,10 +125,6 @@
         </form>
     </div>
     {% endfor %}
-    {% else %}
-    <h3>Cart is empty</h3>
-    <a href="/books">Go to Home</a>
-    {% endif %}
 </div>
 {% endif %}
 
