@@ -76,6 +76,23 @@ def book_detail(request: HttpRequest, id: int):
     })
 
 
+def book_suprise(request: HttpRequest):
+    if request.user.is_authenticated:
+        book_title = request.GET.get('book-title')
+
+        if book_title:
+            book_id = models.Book.objects.get(title=book_title).id
+            surprise_books = recommend_book(book_id, 20)
+
+            return render(request, 'books/surprise.html', {
+                'book_title': book_title,
+                'similar_books': surprise_books
+            })
+
+        return render(request, 'books/surprise.html')
+    return HttpResponse("Unauthorized", status=401)
+
+
 def book_cart_view(request):
     customer = models.Customer.objects.get(user_id=request.user.id)
     cart = models.Order.objects.filter(
@@ -181,21 +198,6 @@ def order_item_review(request: HttpRequest):
     order_item.save()
 
     return redirect(request.META.get("HTTP_REFERER"))
-
-
-def book_suprise(request):
-    book_title = request.GET.get('book-title')
-
-    if book_title:
-        book_id = models.Book.objects.get(title=book_title).id
-        surprise_books = recommend_book(book_id, 20)
-
-        return render(request, 'books/surprise.html', {
-            'book_title': book_title,
-            'similar_books': surprise_books
-        })
-
-    return render(request, 'books/surprise.html')
 
 
 def recommend_book(book_id: int, count: int = 5):
