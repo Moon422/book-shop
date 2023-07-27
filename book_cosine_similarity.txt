@@ -1,4 +1,5 @@
-books with more than 70 ratings
-readers with more than 125 rated books
+Popularity: books with 70 rating counts or more
+
+Collaborative Filtering: More than 125 readers and 25 rating count or more
 
 password=Asdf1234!
