@@ -60,7 +60,7 @@ def book_detail(request: HttpRequest, id: int):
     if request.user.is_authenticated:
         customer = models.Customer.objects.get(user_id=request.user.id)
 
-        return render(request, 'books/index.html', context={
+        return render(request, 'books/book_detail.html', context={
             'book': book,
             'recommendation': similar_books,
             'user': {

@@ -130,6 +130,7 @@
                         </p>
                         {% if user %}
                         <form class="d-flex justify-content-between">
+                            {% csrf_token %}
                             <div class="d-flex justify-content-center">
                                 <button class="btn btn-danger quanity-decrease me-1"
                                     counter-id="book-quantity-{{book.id}}">
