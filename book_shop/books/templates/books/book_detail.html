@@ -46,6 +46,7 @@
             {% if user %}
             <form class="d-flex flex-column ms-auto w-25" method="post" action="/books/add_to_cart">
                 {% csrf_token %}
+                <input type="number" name="book-id" value="{{book.id}}" hidden>
                 <div class="d-flex justify-content-center mb-2">
                     <button class="btn btn-danger quanity-decrease me-2">
                         <i class="fa-solid fa-minus"></i>
@@ -107,6 +108,7 @@
                         {% if user %}
                         <form class="d-flex justify-content-between" method="post" action="/books/add_to_cart">
                             {% csrf_token %}
+                            <input type="number" name="book-id" value="{{book.id}}" hidden>
                             <div class="d-flex justify-content-center">
                                 <button class="btn btn-danger recommended-quanity-decrease me-1"
                                     recommended-counter-id="recommended-book-quantity-{{book.id}}">

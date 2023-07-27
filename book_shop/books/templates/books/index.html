@@ -71,6 +71,7 @@
                         {% if user %}
                         <form class="d-flex justify-content-between" method="post" action="/books/add_to_cart">
                             {% csrf_token %}
+                            <input type="number" name="book-id" value="{{book.id}}" hidden>
                             <div class="d-flex justify-content-center">
                                 <button class="btn btn-danger quanity-decrease me-1"
                                     counter-id="book-quantity-{{book.id}}">
@@ -129,8 +130,9 @@
                             {% endif %}
                         </p>
                         {% if user %}
-                        <form class="d-flex justify-content-between">
+                        <form class="d-flex justify-content-between" method="post" action="/books/add_to_cart">
                             {% csrf_token %}
+                            <input type="number" name="book-id" value="{{book.id}}" hidden>
                             <div class="d-flex justify-content-center">
                                 <button class="btn btn-danger quanity-decrease me-1"
                                     counter-id="book-quantity-{{book.id}}">
